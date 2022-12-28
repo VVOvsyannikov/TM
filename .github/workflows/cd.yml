@@ -44,8 +44,8 @@ jobs:
           script: |
             echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u vvovsyannikov --password-stdin
             docker pull ghcr.io/vvovsyannikov/tm2-web:${{ github.sha }}
-            cd ~/TaskManager
-            docker stop taskmanager
-            docker rm taskmanager
-            docker-compose up -d
-            # docker run -d --name taskmanager -p '0.0.0.0:3000:3000' --env DATABASE_USERNAME=deploy --env DATABASE_PASSWORD=Vova183
+            # cd ~/TaskManager
+            # docker stop taskmanager
+            # docker rm taskmanager
+            # docker-compose up -d
+            docker run -d --name taskmanager -p '0.0.0.0:3000:3000' ghcr.io/vvovsyannikov/tm2-web:${{ github.sha }}
