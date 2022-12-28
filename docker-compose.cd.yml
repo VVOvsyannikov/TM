@@ -2,13 +2,15 @@ version: '3.7'
 
 services:
   web:
-    build: .
-    ports:
-      - 3000:3000
-    depends_on:
-      - db
-    # env_file:
-    #   - ./.env
+    build: 
+      context: .
+      dockerfile: Dockerfile.cd
+    # ports:
+    #   - 3000:3000
+    # depends_on:
+    #   - db
+    env_file:
+      - .env
     # command: bundle exec rails s -b '0.0.0.0' -p 3000
 
   db:
