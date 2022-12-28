@@ -22,7 +22,7 @@ jobs:
 
       - name: Build Docker image
         # run: docker-compose --file docker-compose.cd.yml run web -f Dockerfile.cd --cache-from ghcr.io/vvovsyannikov/tm2-web:latest --tag ghcr.io/vvovsyannikov/tm2-web:${{ github.sha }}
-        run: docker build . -f Dockerfile.cd --cache-from ghcr.io/vvovsyannikov/tm2-web:latest --tag ghcr.io/vvovsyannikov/tm2-web:${{ github.sha }}
+        run: docker build . -f Dockerfile.cd --env-file .env --cache-from ghcr.io/vvovsyannikov/tm2-web:latest --tag ghcr.io/vvovsyannikov/tm2-web:${{ github.sha }}
       
       - name: Push the image to GitHub Container Registry
         run: docker push ghcr.io/vvovsyannikov/tm2-web:${{ github.sha }}
