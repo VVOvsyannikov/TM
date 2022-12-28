@@ -1,0 +1,42 @@
+name: cd
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+  needs: ci
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Login to GitHub Container Registry
+        run: echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u vvovsyannikov --password-stdin
+
+      - name: Pull image to use as a cache
+        run: docker pull ghcr.io/vvovsyannikov/tm2-web:latest || exit 0
+
+      - name: Build Docker image
+        run: docker build . -f Dockerfile.cd --cache-from ghcr.io/vvovsyannikov/tm2-web:latest --tag ghcr.io/vvovsyannikov/tm2-web:${{ github.sha }
+      
+      - name: Push the image to GitHub Container Registry
+        run: docker push ghcr.io/vvovsyannikov/tm2-web:${{ github.sha }}
+
+      - name: VPS - pull image and run app containters
+        uses: appleboy/ssh-action@master
+        with:
+          host: 185.246.65.250
+          username: deploy
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u vvovsyannikov --password-stdin
+            docker pull ghcr.io/vvovsyannikov/tm2-web:${{ github.sha }}
+            cd ~/TaskManager
+            docker stop taskmanager
+            docker rm taskmanager
+            docker-compose up -d
+            # docker run -d --name taskmanager -p '0.0.0.0:3000:3000' --env DATABASE_USERNAME=deploy --env DATABASE_PASSWORD=Vova183

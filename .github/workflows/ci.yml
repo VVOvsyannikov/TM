@@ -1,15 +1,15 @@
-name: Main
+name: ci
 
 on:
   pull_request:
     branches:
-      - 'develop'
+      - 'main'
   push:
     branches:
-      - 'develop'
+      - 'main'
 
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
