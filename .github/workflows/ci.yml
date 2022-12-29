@@ -1,20 +1,20 @@
-# name: ci
+name: ci
 
-# on:
-#   pull_request:
-#     branches:
-#       - 'main'
-#   push:
-#     branches:
-#       - 'main'
+on:
+  pull_request:
+    branches:
+      - 'main'
+  push:
+    branches:
+      - 'main'
 
-# jobs:
-#   ci:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v3
-#       - name: Run tests
-#         env:
-#           COVERAGE: true
-#           RAILS_ENV: test
-#         run: docker-compose --file docker-compose.ci.yml run ci
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run tests
+        env:
+          COVERAGE: true
+          RAILS_ENV: test
+        run: docker-compose --file docker-compose.ci.yml run ci
