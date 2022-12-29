@@ -48,4 +48,3 @@ jobs:
             docker pull ghcr.io/vvovsyannikov/tm-web:${{ github.sha }}
             cd ~/TaskManager
             tag=${{ github.sha }} docker-compose up -d
-            #  docker run -d --name taskmanager -p '0.0.0.0:3000:3000' ghcr.io/vvovsyannikov/tm-web:${{ github.sha }}
