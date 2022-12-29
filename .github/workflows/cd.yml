@@ -26,14 +26,14 @@ jobs:
         run: echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u vvovsyannikov --password-stdin
 
       - name: Pull image to use as a cache
-        run: docker pull ghcr.io/vvovsyannikov/tm2-web:latest || exit 0
+        run: docker pull ghcr.io/vvovsyannikov/tm-web:latest || exit 0
 
       - name: Build Docker image
-        # run: docker-compose --file docker-compose.cd.yml run web --cache-from ghcr.io/vvovsyannikov/tm2-web:latest --tag ghcr.io/vvovsyannikov/tm2-web:${{ github.sha }}
-        run: docker build . -f Dockerfile.cd --cache-from ghcr.io/vvovsyannikov/tm2-web:latest --tag ghcr.io/vvovsyannikov/tm2-web:${{ github.sha }} --build-arg SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE }} --build-arg RAILS_MASTER_KEY=${{ secrets.RAILS_MASTER_KEY }}
+        run: docker-compose --file docker-compose.cd.yml run web --cache-from ghcr.io/vvovsyannikov/tm-web:latest --tag ghcr.io/vvovsyannikov/tm-web:${{ github.sha }}
+        # run: docker build . -f Dockerfile.cd --cache-from ghcr.io/vvovsyannikov/tm-web:latest --tag ghcr.io/vvovsyannikov/tm-web:${{ github.sha }} --build-arg SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE }} --build-arg RAILS_MASTER_KEY=${{ secrets.RAILS_MASTER_KEY }}
       
       - name: Push the image to GitHub Container Registry
-        run: docker push ghcr.io/vvovsyannikov/tm2-web:${{ github.sha }}
+        run: docker push ghcr.io/vvovsyannikov/tm-web:${{ github.sha }}
 
       - name: VPS - pull image and run app containters
         uses: appleboy/ssh-action@master
@@ -43,9 +43,11 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           script: |
             echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u vvovsyannikov --password-stdin
-            docker pull ghcr.io/vvovsyannikov/tm2-web:${{ github.sha }}
-            # cd ~/TaskManager
+            docker pull ghcr.io/vvovsyannikov/tm-web:${{ github.sha }}
+            cd ~/TaskManager
+            docker kill $(docker ps -q)
+            docker rm $(docker ps -a -q)
             # docker stop taskmanager
             # docker rm taskmanager
-            # docker-compose up -d
-            docker run -d --name taskmanager -p '0.0.0.0:3000:3000' ghcr.io/vvovsyannikov/tm2-web:${{ github.sha }}
+            docker-compose up -d
+            #  docker run -d --name taskmanager -p '0.0.0.0:3000:3000' ghcr.io/vvovsyannikov/tm-web:${{ github.sha }}
