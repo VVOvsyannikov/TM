@@ -38,7 +38,9 @@
 yarn-debug.log*
 .yarn-integrity
 .env
-# /config/secrets.yml
+/config/secrets.yml
 /config/master.key
 /config/credentials.yml.enc
 config/credentials.yml.enc
+
+/config/credentials/production.key

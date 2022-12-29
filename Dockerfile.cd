@@ -24,6 +24,6 @@ RUN yarn install --frozen-lockfile
 ADD . $RAILS_ROOT
 ENV PATH=$RAILS_ROOT/bin:${PATH}
 
-# RUN bundle exec rails assets:precompile
+RUN bundle exec rails assets:precompile
 
 EXPOSE 3000
