@@ -29,9 +29,8 @@ jobs:
         run: docker pull ghcr.io/vvovsyannikov/tm-web:latest || exit 0
 
       - name: Build Docker image
-        # run: docker-compose --file docker-compose.cd.yml run web --cache-from ghcr.io/vvovsyannikov/tm-web:latest --tag ghcr.io/vvovsyannikov/tm-web:${{ github.sha }}
         run: docker build . -f Dockerfile.cd --cache-from ghcr.io/vvovsyannikov/tm-web:latest --tag ghcr.io/vvovsyannikov/tm-web:${{ github.sha }}
-              
+
       - name: Push the image to GitHub Container Registry
         run: docker push ghcr.io/vvovsyannikov/tm-web:${{ github.sha }}
 
@@ -43,11 +42,10 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           script: |
             echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u vvovsyannikov --password-stdin
+            docker stop $(docker ps -a| awk '{print $NF}' | grep -w web)
+            docker rm $(docker ps -a | awk '{print $NF}' | grep -w web)
+            docker rmi $(docker images | grep 'web')
             docker pull ghcr.io/vvovsyannikov/tm-web:${{ github.sha }}
             cd ~/TaskManager
-            docker kill $(docker ps -q)
-            docker rm $(docker ps -a -q)
-            # docker stop taskmanager
-            # docker rm taskmanager
-            docker-compose up -d
+            tag=${{ github.sha }} docker-compose up -d
             #  docker run -d --name taskmanager -p '0.0.0.0:3000:3000' ghcr.io/vvovsyannikov/tm-web:${{ github.sha }}
